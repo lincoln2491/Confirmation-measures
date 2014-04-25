@@ -32,7 +32,7 @@ public class Main {
 		eval.setMeasure(new DConfirmationMeasure());
 
 		search = new ConfirmationMeasuresSearch();
-		search.setTreshold(-1);
+		search.setTreshold(0.1);
 
 		selection.setEvaluator(eval);
 		selection.setSearch(search);

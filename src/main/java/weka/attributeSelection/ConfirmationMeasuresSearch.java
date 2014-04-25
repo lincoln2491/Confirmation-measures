@@ -15,6 +15,8 @@ public class ConfirmationMeasuresSearch extends ASSearch {
 
 	private double treshold;
 
+	private boolean useAbsoluteValue;
+
 	public ConfirmationMeasuresSearch() {
 		resetOptions();
 	}
@@ -34,7 +36,8 @@ public class ConfirmationMeasuresSearch extends ASSearch {
 			if (i == data.classIndex()) {
 				continue;
 			}
-			if (measures[i] >= treshold) {
+			if (measures[i] >= treshold
+					|| (useAbsoluteValue && -measures[i] >= treshold)) {
 				selectedAttributes.add(i);
 			}
 		}
@@ -61,18 +64,27 @@ public class ConfirmationMeasuresSearch extends ASSearch {
 		return " Jakiœ opis ";
 	}
 
-	public void setOptions(String[] options) throws Exception {
-		String optionString;
-		resetOptions();
+	// public void setOptions(String[] options) throws Exception {
+	// String optionString;
+	// resetOptions();
+	//
+	// optionString = Utils.getOption('T', options);
+	// if (optionString.length() != 0) {
+	// setTreshold(Double.parseDouble(optionString));
+	// }
+	//
+	// }
 
-		optionString = Utils.getOption('T', options);
-		if (optionString.length() != 0) {
-			setTreshold(Double.parseDouble(optionString));
-		}
+	public boolean isUseAbsoluteValue() {
+		return useAbsoluteValue;
+	}
 
+	public void setUseAbsoluteValue(boolean useAbsoluteValue) {
+		this.useAbsoluteValue = useAbsoluteValue;
 	}
 
 	protected void resetOptions() {
 		treshold = 0.5;
+		useAbsoluteValue = true;
 	}
 }

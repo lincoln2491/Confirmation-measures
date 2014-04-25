@@ -1,5 +1,7 @@
 package weka.attributeSelection;
 
+import java.io.Serializable;
+
 public class DConfirmationMeasure extends AbstractConfirmationMeasure {
 
 	@Override
@@ -11,8 +13,8 @@ public class DConfirmationMeasure extends AbstractConfirmationMeasure {
 		return ad / (ad + cd) - (ad + bd) / nd;
 	}
 
-//	@Override
-//	public String getExpresion() {
-//		return "a/(a+c) - (a+b)/n";
-//	}
+	// @Override
+	// public String getExpresion() {
+	// return "a/(a+c) - (a+b)/n";
+	// }
 }
