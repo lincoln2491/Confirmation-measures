@@ -111,7 +111,6 @@ public class ConfirmationMeasuresEvaluator extends ASEvaluation {
 			confirmationMeasures[i] = confirmationMeasure.getValue(aValues[i],
 					bValues[i], cValues[i], dValues[i], data.numInstances());
 		}
-		System.out.println("aa");
 	}
 
 	public void setOptions(String[] options) throws Exception {

@@ -1,7 +1,10 @@
 package weka.attributeSelection;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import weka.core.Instances;
 import weka.core.Utils;
@@ -29,6 +32,7 @@ public class ConfirmationMeasuresSearch extends ASSearch {
 		}
 		ConfirmationMeasuresEvaluator eval = (ConfirmationMeasuresEvaluator) ASEvaluator;
 		List<Integer> selectedAttributes = new ArrayList<Integer>();
+		TreeSet<Double> avaibleValues = new TreeSet<Double>();
 		int[] result;
 		double[] measures = eval.getConfirmationMeasures();
 
@@ -36,6 +40,7 @@ public class ConfirmationMeasuresSearch extends ASSearch {
 			if (i == data.classIndex()) {
 				continue;
 			}
+			avaibleValues.add(measures[i]);
 			if (measures[i] >= treshold
 					|| (useAbsoluteValue && -measures[i] >= treshold)) {
 				selectedAttributes.add(i);
@@ -48,6 +53,8 @@ public class ConfirmationMeasuresSearch extends ASSearch {
 			result[i] = value.intValue();
 			i++;
 		}
+		System.out.println("Avaible values of confirmation measures: "
+				+ avaibleValues.descendingSet());
 		return result;
 	}
 
