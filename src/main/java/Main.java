@@ -1,15 +1,10 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 
 import weka.attributeSelection.AttributeSelection;
-import weka.attributeSelection.BestFirst;
-import weka.attributeSelection.DConfirmationMeasure;
-import weka.attributeSelection.CfsSubsetEval;
 import weka.attributeSelection.ConfirmationMeasuresEvaluator;
 import weka.attributeSelection.ConfirmationMeasuresSearch;
-import weka.attributeSelection.PhiConfirmationMeasure;
+import weka.attributeSelection.DConfirmationMeasure;
 import weka.core.Instances;
 
 public class Main {
@@ -21,8 +16,9 @@ public class Main {
 	ConfirmationMeasuresSearch search;
 
 	public Main() throws Exception {
-		bf = new BufferedReader(
-				new FileReader("C:/projekty/zp/pliki/test.arff"));
+//		bf = new BufferedReader(
+//				new FileReader("C:/projekty/zp/pliki/test.arff"));
+		bf = new BufferedReader(new FileReader("C:/Program Files/Weka-3-6/data/weather.nominal.arff"));
 		data = new Instances(bf);
 		data.setClassIndex(data.numAttributes() - 1);
 

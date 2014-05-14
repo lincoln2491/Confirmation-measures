@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import javax.smartcardio.ATR;
 
+import org.w3c.dom.Attr;
+
 import weka.attributeSelection.ASEvaluation;
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -40,8 +42,6 @@ public class ConfirmationMeasuresEvaluator extends ASEvaluation {
 	private int bValues[];
 	private int cValues[];
 	private int dValues[];
-	private String yesValues[];
-	private String yesClass;
 	int numberOfDescriptiveAttributes;
 
 	private int confirmationMeasureId;
@@ -61,55 +61,151 @@ public class ConfirmationMeasuresEvaluator extends ASEvaluation {
 		if (data.numAttributes() != data.classIndex() + 1) {
 			throw new Exception("Class is not last atribute");
 		}
+		boolean isTwoValueClass;
 		AbstractConfirmationMeasure confirmationMeasure;
 		confirmationMeasure = idOfConfirmationMeasures
 				.get(confirmationMeasureId);
+
 		numberOfDescriptiveAttributes = data.numAttributes() - 1;
 		confirmationMeasures = new double[numberOfDescriptiveAttributes];
 		aValues = new int[numberOfDescriptiveAttributes];
 		bValues = new int[numberOfDescriptiveAttributes];
 		cValues = new int[numberOfDescriptiveAttributes];
 		dValues = new int[numberOfDescriptiveAttributes];
-		yesValues = new String[numberOfDescriptiveAttributes];
+
 		for (int i = 0; i < numberOfDescriptiveAttributes; i++) {
 			aValues[i] = 0;
 			bValues[i] = 0;
 			cValues[i] = 0;
 			dValues[i] = 0;
-			yesValues[i] = data.attribute(i).value(0);
 		}
-		yesClass = data.classAttribute().value(0);
 
+		if (data.classAttribute().numValues() == 2) {
+			isTwoValueClass = true;
+		} else {
+			isTwoValueClass = false;
+		}
+
+		for (int i = 0; i < numberOfDescriptiveAttributes; i++) {
+			if (data.attribute(i).numValues() == 2 && isTwoValueClass) {
+				computeStandardFactors(data, i);
+			} else {
+				computeExtendedFactors(data, i);
+			}
+		}
+
+		// for (int i = 0; i < data.numInstances(); i++) {
+		// for (int j = 0; j < data.numInstances(); j++) {
+		// Instance firstInstance = data.instance(i);
+		// Instance secondInstance = data.instance(j);
+		// for (int k = 0; k < data.numAttributes() - 1; k++) {
+		// Double aF = firstInstance.value(k);
+		// Double cF = firstInstance.value(data.classIndex());
+		// Double aS = secondInstance.value(k);
+		// Double cS = secondInstance.value(data.classIndex());
+		// if (aF.equals(aS)) {
+		// if (cF.equals(cS)) {
+		// aValues[k]++;
+		// } else {
+		// cValues[k]++;
+		// }
+		// } else {
+		// if (cF.equals(cS)) {
+		// bValues[k]++;
+		// } else {
+		// dValues[k]++;
+		// }
+		// }
+		//
+		// }
+		// }
+		// }
+		//
+		// for (int i = 0; i < data.numInstances(); i++) {
+		// Instance instance = data.instance(i);
+		// String classOfInstance = data.classAttribute().value(
+		// (int) instance.value(data.classIndex()));
+		// if (classOfInstance.equals(yesClass)) {
+		// for (int j = 0; j < numberOfDescriptiveAttributes; j++) {
+		// Attribute attribute = data.attribute(j);
+		// if (attribute.value((int) instance.value(attribute))
+		// .equals(yesValues[j])) {
+		// aValues[j]++;
+		// } else {
+		// bValues[j]++;
+		// }
+		// }
+		// } else {
+		// for (int j = 0; j < numberOfDescriptiveAttributes; j++) {
+		// Attribute attribute = data.attribute(j);
+		// if (attribute.value((int) instance.value(attribute))
+		// .equals(yesValues[j])) {
+		// cValues[j]++;
+		// } else {
+		// dValues[j]++;
+		// }
+		// }
+		// }
+		// }
+
+		for (int i = 0; i < numberOfDescriptiveAttributes; i++) {
+			confirmationMeasures[i] = confirmationMeasure.getValue(aValues[i],
+					bValues[i], cValues[i], dValues[i]);
+		}
+	}
+
+	private void computeStandardFactors(Instances data, int attributeIndex) {
+		String yesClass = data.classAttribute().value(0);
+		String yesValue = data.attribute(attributeIndex).value(0);
 		for (int i = 0; i < data.numInstances(); i++) {
 			Instance instance = data.instance(i);
 			String classOfInstance = data.classAttribute().value(
 					(int) instance.value(data.classIndex()));
 			if (classOfInstance.equals(yesClass)) {
-				for (int j = 0; j < numberOfDescriptiveAttributes; j++) {
-					Attribute attribute = data.attribute(j);
-					if (attribute.value((int) instance.value(attribute))
-							.equals(yesValues[j])) {
-						aValues[j]++;
-					} else {
-						bValues[j]++;
-					}
+				Attribute attribute = data.attribute(attributeIndex);
+				if (attribute.value((int) instance.value(attribute)).equals(
+						yesValue)) {
+					aValues[attributeIndex]++;
+				} else {
+					bValues[attributeIndex]++;
 				}
 			} else {
-				for (int j = 0; j < numberOfDescriptiveAttributes; j++) {
-					Attribute attribute = data.attribute(j);
-					if (attribute.value((int) instance.value(attribute))
-							.equals(yesValues[j])) {
-						cValues[j]++;
-					} else {
-						dValues[j]++;
-					}
+				Attribute attribute = data.attribute(attributeIndex);
+				if (attribute.value((int) instance.value(attribute)).equals(
+						yesValue)) {
+					cValues[attributeIndex]++;
+				} else {
+					dValues[attributeIndex]++;
 				}
 			}
 		}
 
-		for (int i = 0; i < numberOfDescriptiveAttributes; i++) {
-			confirmationMeasures[i] = confirmationMeasure.getValue(aValues[i],
-					bValues[i], cValues[i], dValues[i], data.numInstances());
+	}
+
+	private void computeExtendedFactors(Instances data, int attributeIndex) {
+		for (int i = 0; i < data.numInstances(); i++) {
+			for (int j = 0; j < data.numInstances(); j++) {
+				Instance firstInstance = data.instance(i);
+				Instance secondInstance = data.instance(j);
+
+				Double aF = firstInstance.value(attributeIndex);
+				Double cF = firstInstance.value(data.classIndex());
+				Double aS = secondInstance.value(attributeIndex);
+				Double cS = secondInstance.value(data.classIndex());
+				if (aF.equals(aS)) {
+					if (cF.equals(cS)) {
+						aValues[attributeIndex]++;
+					} else {
+						cValues[attributeIndex]++;
+					}
+				} else {
+					if (cF.equals(cS)) {
+						bValues[attributeIndex]++;
+					} else {
+						dValues[attributeIndex]++;
+					}
+				}
+			}
 		}
 	}
 

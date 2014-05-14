@@ -3,7 +3,7 @@ package weka.attributeSelection;
 public class SConfirmationMeasure extends AbstractConfirmationMeasure {
 
 	@Override
-	public double getValue(int a, int b, int c, int d, int n) {
+	public double getValue(int a, int b, int c, int d) {
 		double ad = a;
 		double bd = b;
 		double cd = c;
